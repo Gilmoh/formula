@@ -1,0 +1,11 @@
+ToDo:
+- Adjust maven pom:
+    - adjust groupId by adding your sub group at the end (i.e. formula)
+    - adjust artifactId by giving it a name (i.e. core)
+    - adjust properties if you don't intend to use java (1.)8
+    - check and adjust versions if needed or wanted
+
+- Adjust the files in .github if you don't use main as your default branch (i.e. rename main to your default branch name)
+- Create your package in the src/main/kotlin folder and delete the empty placeholder file
+- Create your package in the src/test/kotlin folder and delete the empty placeholder file
+- Get going

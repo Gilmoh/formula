@@ -1,0 +1,49 @@
+name: Maven Test and Deploy and Create Github Release
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Set tag output
+        run: echo "::set-output name=VERSIONNUMBER::${GITHUB_REF##*/v}"
+        id: set-tag
+      - name: Echotag
+        run: echo ${{ steps.set-tag.outputs.VERSIONNUMBER }}
+      - name: Build with Maven
+        run: mvn -DnewVersion=${{ steps.set-tag.outputs.VERSIONNUMBER }} -B package -Dmaven.test.skip=true
+      - name: Test with Maven
+        run: mvn -B test
+      - name: Deploy to maven.gilmoh.de with Maven
+        run: mvn deploy -B -DnewVersion=${{ steps.set-tag.outputs.VERSIONNUMBER }} -s build/settings.xml -Dmaven.test.skip=true
+        env:
+          DEPLOYMENT_USERNAME: ${{ secrets.NEXUS_BOT_USERNAME }}
+          DEPLOYMENT_PASSWORD: ${{ secrets.NEXUS_BOT_PASSWORD }}
+
+  github-release:
+    needs:
+      - build
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # autofilled
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: This is an automatic release.
+          draft: false
+          prerelease: false
