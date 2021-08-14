@@ -10,7 +10,7 @@ class AllExampleFilesExist {
     @Test
     fun testAllExamplesFiles() {
         for(example in ExampleFiles.values())
-            readExample(example)
+            example.read()
 
         assertTrue(true)
     }

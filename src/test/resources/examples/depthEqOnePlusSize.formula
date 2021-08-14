@@ -1,0 +1,1 @@
+depth(c(x,y)) = 1 + size(c(x,y))

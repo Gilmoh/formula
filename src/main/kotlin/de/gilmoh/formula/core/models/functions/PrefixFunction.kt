@@ -10,4 +10,6 @@ data class PrefixFunction(
 ) : Function, HasSymbol {
     override val arity: Int
         get() = this.parameters.size
+
+    constructor(symbol: String, vararg parameters: Formula) : this(symbol, parameters.toList())
 }
