@@ -42,6 +42,16 @@ internal class ParseFormulaKtTest {
                     InfixFunction("*", Variable("a"), Variable("d")),
                     InfixFunction("*", Variable("b"), Variable("c"))
                 )
+            ),
+            ExampleFiles.ASSOCIATIVITY to InfixFunction("=",
+                InfixFunction("+",
+                    Priority(InfixFunction("+", Variable("a"), Variable("b"))),
+                    Variable("c")
+                ),
+                InfixFunction("+",
+                    Variable("a"),
+                    Priority(InfixFunction("+", Variable("b"), Variable("c")))
+                ),
             )
         )
 
@@ -56,7 +66,8 @@ internal class ParseFormulaKtTest {
             ExampleFiles.DEPTH_EQ_ONE_PLUS_SIZE to listOf("(c(x,y))", "(c(x,y))"),
             ExampleFiles.TOP_LEVEL_PARENTHESIS to listOf("(x = zetta(c(x,y)))"),
             ExampleFiles.SUPERDEPTH to listOf("(c(x,y), d(x,y,z))"),
-            ExampleFiles.QUOTIENT_EQUIVALENCY to listOf()
+            ExampleFiles.QUOTIENT_EQUIVALENCY to listOf(),
+            ExampleFiles.ASSOCIATIVITY to listOf("(a + b)", "(b + c)"),
         )
         for ((example, expected) in expectations) {
             val actual = topLevelParenthesis(example.read())
@@ -70,7 +81,8 @@ internal class ParseFormulaKtTest {
             ExampleFiles.DEPTH_EQ_ONE_PLUS_SIZE to false,
             ExampleFiles.TOP_LEVEL_PARENTHESIS to true,
             ExampleFiles.SUPERDEPTH to false,
-            ExampleFiles.QUOTIENT_EQUIVALENCY to false
+            ExampleFiles.QUOTIENT_EQUIVALENCY to false,
+            ExampleFiles.ASSOCIATIVITY to false,
         )
         for ((example, expected) in expectations) {
             val actual = isTopLevelPriority(example.read())
@@ -83,7 +95,8 @@ internal class ParseFormulaKtTest {
             ExampleFiles.DEPTH_EQ_ONE_PLUS_SIZE to true,
             ExampleFiles.TOP_LEVEL_PARENTHESIS to false,
             ExampleFiles.SUPERDEPTH to false,
-            ExampleFiles.QUOTIENT_EQUIVALENCY to true
+            ExampleFiles.QUOTIENT_EQUIVALENCY to true,
+            ExampleFiles.ASSOCIATIVITY to true,
         )
         for ((example, expected) in expectations) {
             val actual = isTopLevelFunctionInfix(example.read())
@@ -96,7 +109,8 @@ internal class ParseFormulaKtTest {
             ExampleFiles.DEPTH_EQ_ONE_PLUS_SIZE to false,
             ExampleFiles.TOP_LEVEL_PARENTHESIS to false,
             ExampleFiles.SUPERDEPTH to true,
-            ExampleFiles.QUOTIENT_EQUIVALENCY to false
+            ExampleFiles.QUOTIENT_EQUIVALENCY to false,
+            ExampleFiles.ASSOCIATIVITY to false,
         )
         for ((example, expected) in expectations) {
             val actual = isTopLevelFunctionPrefix(example.read())
