@@ -52,7 +52,22 @@ fun isValidCharacter(character: Char): Boolean {
 
 fun isTopLevelPriority(input: String): Boolean {
     val processedInput = preprocessInput(input)
-    return processedInput.startsWith("(") && processedInput.endsWith(")")
+    if(!(processedInput.startsWith("(") && processedInput.endsWith(")")))
+        return false
+
+
+    // Setting up this way to simplify the preemptive check
+    var level = 1;
+    for(character in processedInput.drop(1)) {
+        if(level == 0)
+            return false
+        when(character) {
+            '(' -> level++
+            ')' -> level--
+        }
+    }
+
+    return level == 0
 }
 
 fun isTopLevelFunctionInfix(input: String): Boolean {
