@@ -33,7 +33,6 @@ enum class StandardInfixFunctions(
 
 
     companion object {
-        fun isInfixFunction(symbol: String): Boolean = values().map { it.symbol }.toSet().contains(symbol)
         fun getInfixFunctionBySymbol(symbol: String) = values().find { it.symbol == symbol }
     }
 
