@@ -29,7 +29,13 @@ enum class StandardInfixFunctions(
     NOR("nor", 150),
     IMPLIES("=>", 200),
     IS_IMPLIED("<=", 200),
-    EQUIVALENCE("<=>", 200),
+    EQUIVALENCE("<=>", 200);
+
+
+    companion object {
+        fun isInfixFunction(symbol: String): Boolean = values().map { it.symbol }.toSet().contains(symbol)
+        fun getInfixFunctionBySymbol(symbol: String) = values().find { it.symbol == symbol }
+    }
 
 }
 

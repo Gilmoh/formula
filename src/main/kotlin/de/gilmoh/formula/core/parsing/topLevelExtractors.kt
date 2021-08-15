@@ -1,6 +1,54 @@
 package de.gilmoh.formula.core.parsing
 
 import de.gilmoh.formula.core.knowledge.StandardInfixFunctions
+import java.lang.RuntimeException
+
+enum class FormulaType {
+    PRIORITY,
+    PREFIX,
+    INFIX,
+    VARIABLE,
+    VALUE;
+}
+
+fun getTopLevelFunctionType(input: String): FormulaType {
+    val processedInput = preprocessInput(input)
+    if(isTopLevelPriority(processedInput))
+        return FormulaType.PRIORITY
+
+    val inputWithoutParenthesisContent = removeContentOfParenthesis(processedInput)
+
+    val delimited  = inputWithoutParenthesisContent.split(" ")
+
+    val anyInfix = delimited.any {
+        isTopLevelFunctionInfix(it)
+    }
+    if(anyInfix)
+        return FormulaType.INFIX
+
+    if(delimited.size == 1) {
+        val maybePrefix = delimited[0]
+        var isPrefix = true
+
+        isPrefix = isPrefix && maybePrefix.endsWith("()")
+        for (character in maybePrefix.dropLast(2)) {
+            isPrefix = isPrefix && isValidCharacter(character)
+        }
+
+        if(isPrefix)
+            return FormulaType.PREFIX
+    }
+
+    if(delimited.size == 1 && delimited[0].any { it.isLetter() })
+        return FormulaType.VARIABLE
+
+    if(delimited.size == 1 && delimited[0].all { it.isDigit() })
+        return FormulaType.VALUE
+
+
+    throw RuntimeException("No Formula Type could be assigned to ${processedInput}.")
+}
+
 
 fun isTopLevelFunctionPrefix(input: String): Boolean {
     val processedInput = preprocessInput(input)
@@ -57,7 +105,7 @@ fun isTopLevelPriority(input: String): Boolean {
 
 
     // Setting up this way to simplify the preemptive check
-    var level = 1;
+    var level = 1
     for(character in processedInput.drop(1)) {
         if(level == 0)
             return false
@@ -141,4 +189,33 @@ fun topLevelParenthesis(input: String): List<String> {
 
 fun preprocessInput(input: String): String {
     return input.trim()
+}
+
+fun removeContentOfParenthesis(input: String): String {
+    var inputWithoutParenthesisContent = ""
+    var level = 0
+
+    for (character in input) {
+        if(character == '(') {
+            if(level == 0)
+                inputWithoutParenthesisContent += character
+            level++
+
+            continue
+        }
+
+        if(character == ')') {
+            level--
+            if(level == 0)
+                inputWithoutParenthesisContent += character
+
+            continue
+        }
+
+        if(level == 0)
+            inputWithoutParenthesisContent += character
+
+    }
+
+    return inputWithoutParenthesisContent
 }

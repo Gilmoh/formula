@@ -6,7 +6,6 @@ import de.gilmoh.formula.core.models.Variable
 import de.gilmoh.formula.core.models.functions.InfixFunction
 import de.gilmoh.formula.core.models.functions.PrefixFunction
 import de.gilmoh.formula.core.test.util.ExampleFiles
-import de.gilmoh.formula.core.test.util.readExample
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -114,6 +113,21 @@ internal class ParseFormulaKtTest {
         )
         for ((example, expected) in expectations) {
             val actual = isTopLevelFunctionPrefix(example.read())
+            assertEquals(expected, actual, "Test failed for ${example.fileName}: ${example.read()}.")
+        }
+    }
+
+
+    @Test fun `getTopLevelFunctionType() works`() {
+        val expectations = mapOf(
+            ExampleFiles.DEPTH_EQ_ONE_PLUS_SIZE to FormulaType.INFIX,
+            ExampleFiles.TOP_LEVEL_PARENTHESIS to FormulaType.PRIORITY,
+            ExampleFiles.SUPERDEPTH to FormulaType.PREFIX,
+            ExampleFiles.QUOTIENT_EQUIVALENCY to FormulaType.INFIX,
+            ExampleFiles.ASSOCIATIVITY to FormulaType.INFIX,
+        )
+        for ((example, expected) in expectations) {
+            val actual = getTopLevelFunctionType(example.read())
             assertEquals(expected, actual, "Test failed for ${example.fileName}: ${example.read()}.")
         }
     }
